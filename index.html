@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+input[type=text], select, textarea {
+  width: 50%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+}
+
+.button {
+  background-color: #008CBA; 
+  color: rgb(255, 255, 255); 
+  border: 2px solid #008CBA;
+  padding: 8px 16px;
+  border-radius: 4px;
+  
+}
+
+.h2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: 1%;;
+  background-color:rgb(160, 194, 191)
+}
+
+</style>
+</head>
+<body>
+
+<h2>School GPA Calculator for Marking Period</h2>
+
+<button onClick="createForm()" class="button"> 
+    Add Class
+</button> 
+<button onclick="checkForm()" class="button">Calculate GPA</button>
+<p id="gpadisplay"></p>
+<script>    
+    var br = document.createElement("br");  
+    var form = document.createElement("form"); 
+
+    function createForm() {
+        var grade = document.createElement("input"); 
+        grade.setAttribute("type", "number"); 
+        grade.setAttribute("name", "Grade"); 
+        grade.setAttribute("placeholder", "Grade"); 
+        
+        var weight = document.createElement("input"); 
+        weight.setAttribute("type", "number"); 
+        weight.setAttribute("name", "Weight"); 
+        weight.setAttribute("placeholder", "Weight"); 
+
+        var credits = document.createElement("input"); 
+        credits.setAttribute("type", "number"); 
+        credits.setAttribute("name", "Credits"); 
+        credits.setAttribute("placeholder", "Credits"); 
+
+        var sel = document.createElement("SELECT");
+        sel.setAttribute("id", "mySelect");
+        document.body.appendChild(sel);
+
+        var sopt = document.createElement("option");
+        sopt.setAttribute("value", "Semester");
+        var yopt = document.createElement("option");
+        yopt.setAttribute("value", "Year");
+        var stext = document.createTextNode("Semester");
+        var ytext = document.createTextNode("Year");
+        sopt.appendChild(stext);
+        yopt.appendChild(ytext);
+        sel.appendChild(sopt);
+        sel.appendChild(yopt);
+
+        var lab = document.createElement("LABEL");
+        var gr = document.createTextNode("Grade");
+        lab.appendChild(gr);
+
+        var lab2 = document.createElement("LABEL");
+        var we = document.createTextNode("Weight");
+        lab2.appendChild(we);
+
+        var lab3 = document.createElement("LABEL");
+        var cr = document.createTextNode("Credits");
+        lab3.appendChild(cr);
+
+        var lab4 = document.createElement("LABEL");
+        var se = document.createTextNode("Semester/Year");
+        lab4.appendChild(se);
+
+        form.appendChild(lab);
+        form.appendChild(grade);  
+        form.appendChild(br.cloneNode());  
+            
+        form.appendChild(lab2);
+        form.appendChild(weight);  
+        form.appendChild(br.cloneNode());  
+            
+        form.appendChild(lab3);
+        form.appendChild(credits);  
+        form.appendChild(br.cloneNode());  
+            
+        form.appendChild(lab4);
+        form.appendChild(sel); 
+        form.appendChild(br.cloneNode()); 
+        form.appendChild(br.cloneNode());
+
+        document.getElementsByTagName("body")[0]   
+        .appendChild(form); 
+    }
+
+    function checkForm() {
+        var x = "Please fill in the missing values.";
+        var bool = true;
+        for (i = 0; i < form.elements.length; i++) {
+            if (form.elements[i].value.length == 0) {
+                alert(x);
+                bool = false;
+                break;
+            }
+        }
+        if (bool == true) {
+          calcGPA();
+        }
+    }
+
+    function calcGPA() {
+        var arrcredits = new Array(form.elements.length / 4).fill(0); 
+        var wgpas = new Array(form.elements.length / 4).fill(0); 
+
+        for (i = 0; i < form.elements.length;) {
+            var singlegpa = 0;
+            var credits = 0;
+            if (form.elements[i].value < 60) {
+                singlegpa = 0;
+            }
+            if (form.elements[i].value >= 60 && form.elements[i].value < 80) {
+                singlegpa = 1 + ((form.elements[i].value - 60) / parseFloat(10));
+            }
+            if (form.elements[i].value >= 80 && form.elements[i].value <= 100) {
+                singlegpa = 3 + ((form.elements[i].value - 80) / parseFloat(20));
+            }
+            index = form.elements[i+3].selectedIndex;
+            var selectText = form.elements[i+3].options[index].text;
+            if (selectText == "Semester") {
+                credits = form.elements[i+2].value;
+                credits *= 2;
+                arrcredits[i/4] = credits * 1;
+                wgpas[i/4] = singlegpa * form.elements[i+1].value * credits;
+            }
+            if (selectText == "Year") {
+                credits = form.elements[i+2].value;
+                arrcredits[i/4] = credits * 1;
+                wgpas[i/4] = singlegpa * form.elements[i+1].value * credits;
+            }
+            i += 4;
+        }
+
+        var sum = 0;
+        var totCredits = 0;
+        k = 0;
+        for (j = 0; j < form.elements.length;) {
+            sum += wgpas[k];
+            totCredits += arrcredits[k];
+            j += 4;
+            k += 1;
+        }
+        var finalGPA = sum / parseFloat(totCredits);
+        document.getElementById("gpadisplay").innerHTML = "Your GPA is: " + finalGPA;
+    }
+</script>
+</body>
+</html>
